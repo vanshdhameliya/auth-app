@@ -1,2 +1,27 @@
 server :
   port : 8083
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth_app?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+
+#  hikari:
+#    pool-name: HikariCP
+#    maximum-pool-size: 5
+#    connection-timeout: 10000          # 10 seconds
+#    idle-timeout: 600000                # 10 minutes
+#    max-lifetime: 1800000               # 30 minutes
+#    validation-timeout: 5000            # Recommended: 5 seconds (Optimized from 1800000)
+#    leak-detection-threshold: 0         # Disabled
+#    initialization-fail-timeout: -1     # App won't crash if DB is down at startup
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

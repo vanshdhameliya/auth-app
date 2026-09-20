@@ -2,7 +2,6 @@ package tech.logicforge.auth_app_backend.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import tech.logicforge.auth_app_backend.entity.Provider;
 import lombok.*;

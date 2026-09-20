@@ -1,6 +1,7 @@
 package tech.logicforge.auth_app_backend.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +20,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("the "+username+" is not found in db!"));
+                .orElseThrow(() -> new BadCredentialsException("the "+username+" is not found in db!"));
 
     }
 }

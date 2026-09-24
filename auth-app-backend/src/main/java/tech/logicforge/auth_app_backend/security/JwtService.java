@@ -45,26 +45,23 @@ public class JwtService {
 
     @PostConstruct
     protected void init() {
-
         if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 64) {
             throw new IllegalArgumentException("JWT Secret key must be at least 64 bytes (512 bits) long for HS512 safety.");
         }
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-
     public String generateAccessToken(User user) {
         return buildToken(user, accessTtlSeconds, "access");
     }
 
-    public String generateRefreshToken(User user) {
-        return buildToken(user, refreshTtlSeconds, "refresh");
+    public String generateRefreshToken(User user, String jti) {
+        return buildTokenWithJti(user, refreshTtlSeconds, "refresh", jti);
     }
 
     private String buildToken(User user, long ttlSeconds, String tokenType) {
 
         Instant now = Instant.now();
-
         List<String> roles = user.getRoles() == null ? List.of() :
                 user.getRoles().stream().map(Role::getName).toList();
 
@@ -83,8 +80,37 @@ public class JwtService {
                 .compact();
     }
 
-    private Claims extractAllClaims(String token) {
+    private String buildTokenWithJti(User user, long ttlSeconds, String tokenType, String jti) {
+        Instant now = Instant.now();
 
+        return Jwts.builder()
+                .id(jti)
+                .subject(user.getId().toString())
+                .issuer(issuer)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(ttlSeconds)))
+                .claims(Map.of(
+                        "email", user.getEmail(),
+                        "typ", tokenType
+                ))
+                .signWith(signingKey, Jwts.SIG.HS512)
+                .compact();
+    }
+
+    public String getJti(String token) {
+        return extractClaim(token, Claims::getId);
+    }
+
+    public boolean isRefreshToken(String token) {
+        String typ = extractClaim(token, claims -> claims.get("typ", String.class));
+        return "refresh".equals(typ);
+    }
+
+    public UUID getUserId(String token) {
+        return UUID.fromString(extractSubject(token));
+    }
+
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)
                 .build()
@@ -92,28 +118,16 @@ public class JwtService {
                 .getPayload();
     }
 
-/*    It means this method can return any object type depending on what you ask for.
-      If you ask for the Expiration Date, T becomes a Date.
-      If you ask for roles, T becomes a List<String>.
-      function that takes a Claims object as input, and I will return something of type T.           */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-
-//        parse the encrypted token string, verify its cryptographic signature
-//        with your signingKey, and unlock the entire JSON payload.
         final Claims claims = extractAllClaims(token);
-
-//        runs it against the unlocked claims object, and returns exactly what you asked for.
         return claimsResolver.apply(claims);
     }
-
 
     public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-
     public boolean isTokenValid(String token, UUID userId) {
-
         try {
             final String extractedId = extractSubject(token);
             return (extractedId.equals(userId.toString()) && !isTokenExpired(token));

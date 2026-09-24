@@ -3,7 +3,7 @@ package tech.logicforge.auth_app_backend.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.logicforge.auth_app_backend.dtos.UserDto;
+import tech.logicforge.auth_app_backend.paylod.UserDto;
 import tech.logicforge.auth_app_backend.service.AuthService;
 import tech.logicforge.auth_app_backend.service.UserService;
 

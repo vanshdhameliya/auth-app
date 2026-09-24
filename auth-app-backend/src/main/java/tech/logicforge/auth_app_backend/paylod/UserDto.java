@@ -1,4 +1,4 @@
-package tech.logicforge.auth_app_backend.dtos;
+package tech.logicforge.auth_app_backend.paylod;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

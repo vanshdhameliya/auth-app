@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import tech.logicforge.auth_app_backend.dtos.UserDto;
+import tech.logicforge.auth_app_backend.paylod.UserDto;
 import tech.logicforge.auth_app_backend.entity.Provider;
 import tech.logicforge.auth_app_backend.entity.User;
 import tech.logicforge.auth_app_backend.exception.ResourceNotFoundException;

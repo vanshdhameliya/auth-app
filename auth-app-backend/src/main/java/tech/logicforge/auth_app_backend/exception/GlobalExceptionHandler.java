@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tech.logicforge.auth_app_backend.dtos.ApiError;
 import tech.logicforge.auth_app_backend.dtos.ErrorResponse;
-import tech.logicforge.auth_app_backend.dtos.ValidationExceptionResponseDTO;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +52,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationExceptionResponseDTO> handleDMethodArgumentNotValidException(
+    public ResponseEntity<ApiError> handleDMethodArgumentNotValidException(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
         Map<String, String> fieldErrors = new HashMap<>();
@@ -63,14 +61,9 @@ public class GlobalExceptionHandler {
                 .forEach(error ->
                         fieldErrors.put(error.getField(), error.getDefaultMessage()));
 
-        ValidationExceptionResponseDTO exceptionResponse = new ValidationExceptionResponseDTO(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Validation Failed",
-                request.getRequestURI(),
-                fieldErrors
-        );
+        ApiError exceptionResponse =
+                ApiError.of(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        "Bad Request!",request.getRequestURI(),fieldErrors);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

@@ -1,8 +1,6 @@
 package tech.logicforge.auth_app_backend.service;
 
-import tech.logicforge.auth_app_backend.dtos.UserDto;
-
-import java.util.UUID;
+import tech.logicforge.auth_app_backend.paylod.UserDto;
 
 public interface UserService {
 

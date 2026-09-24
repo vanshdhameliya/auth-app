@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.logicforge.auth_app_backend.dtos.UserDto;
+import tech.logicforge.auth_app_backend.paylod.UserDto;
 import tech.logicforge.auth_app_backend.service.UserService;
 
 @RestController

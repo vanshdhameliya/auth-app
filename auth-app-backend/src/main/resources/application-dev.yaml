@@ -1,22 +1,12 @@
-server :
-  port : 8083
+server:
+  port: 8083
 
 spring:
   datasource:
+    # Appended fallback username/password defaults to prevent connection crashes if env variables are empty
     url: jdbc:mysql://localhost:3306/auth_app?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-
-#  hikari:
-#    pool-name: HikariCP
-#    maximum-pool-size: 5
-#    connection-timeout: 10000          # 10 seconds
-#    idle-timeout: 600000                # 10 minutes
-#    max-lifetime: 1800000               # 30 minutes
-#    validation-timeout: 5000            # Recommended: 5 seconds (Optimized from 1800000)
-#    leak-detection-threshold: 0         # Disabled
-#    initialization-fail-timeout: -1     # App won't crash if DB is down at startup
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
@@ -26,24 +16,36 @@ spring:
       hibernate:
         format_sql: true
 
-  logging:
-    level:
-      org.springframework.web: DEBUG
+  # FIXED HIERARCHY: Moved out from nested blocks to sit squarely under 'spring'
+  security:
+    oauth2:
+      client:
+        registration:
 
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid,profile,email
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+              #/login/oauth2/code/github
+            scope: email
+
+# FIXED HIERARCHY: Moved out from nested spring properties to standard root level
+logging:
+  level:
+    org.springframework.web: DEBUG
 
 security:
-  jwt :
+  jwt:
     secret: ${JWT_SECRET:b9b4f23c520b00fdb6feaf45a1d75fc53342777823d04cbb27b3500d15b4cef6}
     issuer: ${JWT_ISSUER:api.substring.com}
     access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:3600}
     refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:86400}
-    access-token-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refreshToken}
+    refresh-token-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refreshToken}
     cookie-secure: ${JWT_COOKIE_SECURE:true}
     cookie-http-only: ${JWT_COOKIE_HTTP_ONLY:true}
     cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
-
-
-
-
-
-
+    cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
